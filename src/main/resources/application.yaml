@@ -6,14 +6,13 @@ spring:
       api-key: ${OPENAI_API_KEY}
       chat:
         options:
-          model: gpt-5-nano
-          temperature: 1.0
+          model: gpt-4.1-mini
       embedding:
         options:
           model: text-embedding-3-small
     vectorstore:
       pgvector:
-        initialize-schema: true
+        initialize-schema: false # 최초 사용시엔 true로 설정.
         table-name: gourmet_vector
         index-type: HNSW
         distance-type: COSINE_DISTANCE
@@ -24,6 +23,20 @@ spring:
         repository:
           jdbc:
             initialize-schema: always
+    mcp:
+      client:
+        stdio:
+#          servers-configuration: "classpath:mcp-servers.json"
+          connections:
+            slack:
+              command: npx
+              args:
+                - "-y"
+                - "@modelcontextprotocol/server-slack"
+              env:
+                SLACK_BOT_TOKEN: "${SLACK_BOT_TOKEN}"
+                SLACK_TEAM_ID: "${SLACK_TEAM_ID}"
+                SLACK_CHANNEL_IDS: "${SLACK_CHANNEL_IDS}"
   datasource:
     url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
